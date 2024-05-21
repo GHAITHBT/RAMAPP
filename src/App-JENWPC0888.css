@@ -1,7 +1,6 @@
 .App {
   text-align: center;
-  margin-top: 10vh;
-  margin-left: 20vh;
+  margin-top: 3vh;
 }
 
 .form-container {
@@ -55,4 +54,18 @@ select {
 select:focus {
   outline: none;
   border-color: #007bff;
+}
+.Content {
+  margin-top: 
+  10px; /* Height of the header */
+  margin-left: 150px; /* Width of the sidebar */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .Content {
+    margin-top: 50px; /* Adjusted height for the smaller header */
+    margin-left: 0;
+  }
 }
