@@ -1,19 +1,19 @@
 .Sidebar {
   position: fixed;
-  top: 60px; /* Height of the header */
+  top: 0px; /* Height of the header */
   left: 0;
-  height: calc(100% - 60px); /* Height of the header */
+  height: calc(100% - 30px); /* Height of the header */
   width: 150px; /* Width of the sidebar */
-  background-color: #489139;
+  background-color: #2e21a0c4;
   overflow: hidden;
-  padding-top: 20px; /* Adjust the padding as needed */
+  padding-top: 100px; /* Adjust the padding as needed */
 }
 
 .Sidebar .nav-link {
   display: block;
   color: white;
-  text-align: left;
-  padding: 14px 16px;
+  text-align: center; /* Center align the text */
+  padding: 50px 16px;
   text-decoration: none;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -21,6 +21,14 @@
 .Sidebar .nav-link:hover {
   background-color: #ddd;
   color: black;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 70px;
+  width: 100%;
+  text-align: center;
+  color: white; 
 }
 
 @media (max-width: 768px) {

@@ -75,7 +75,7 @@ function DataPage() {
       }
     };
     fetchData();
-  }, [filters]);
+  }, [filters]); 
 
   const handleFilterChange = (e, columnName) => {
     const { value } = e.target;

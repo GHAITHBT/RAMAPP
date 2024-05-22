@@ -1,16 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
-import { Bar, Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
+import { Bar, Pie } from 'react-chartjs-2'; // Updated import
 import { format, parseISO } from 'date-fns';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import './ChartsPage1.css';
 import ZoomPlugin from 'chartjs-plugin-zoom'; // Import the zoom plugin
-
-// Register the necessary components with ChartJS
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, ZoomPlugin);
 
 function ExportableChart() {
   const barChartRefs = useRef([]);
@@ -113,99 +109,95 @@ function ExportableChart() {
     'rgba(255, 99, 132, 0.6)',
     'rgba(54, 162, 235, 0.6)',
     'rgba(255, 206, 86, 0.6)',
-    'rgba(75, 192, 192, 0.6)',
-    'rgba(153, 102, 255, 0.6)',
-    'rgba(255, 159, 64, 0.6)',
-    'rgba(255, 99, 132, 0.6)',
-  ];
-
-  // Add zoom plugin options
-  const zoomOptions = {
-    pan: {
+      'rgba(75, 192, 192, 0.6)',
+      'rgba(153, 102, 255, 0.6)',
+      'rgba(255, 159, 64, 0.6)',
+      'rgba(255, 99, 132, 0.6)',
+      ];
+      
+      // Add zoom plugin options
+      const zoomOptions = {
+      pan: {
       enabled: true,
       mode: 'xy',
       rangeMin: {
-        x: null,
-        y: null,
+      x: null,
+      y: null,
       },
       rangeMax: {
-        x: null,
-        y: null,
+      x: null,
+      y: null,
       },
-    },
-    zoom: {
+      },
+      zoom: {
       wheel: {
-        enabled: true,
+      enabled: true,
       },
       pinch: {
-        enabled: true,
+      enabled: true,
       },
       mode: 'xy',
       rangeMin: {
-        x: null,
-        y: null,
+      x: null,
+      y: null,
       },
       rangeMax: {
-        x: null,
-        y: null,
+      x: null,
+      y: null,
       },
-    },
-  };
-
-  const exportToExcel = () => {
-    const wb = XLSX.utils.book_new();
-    wb.Props = {
+      },
+      };
+      
+      const exportToExcel = () => {
+      const wb = XLSX.utils.book_new();
+      wb.Props = {
       Title: 'Charts Data',
       Author: 'Your Name',
-    };
-    wb.SheetNames.push('Bar Chart Data');
-    const wsBar = XLSX.utils.json_to_sheet(
+      };
+      wb.SheetNames.push('Bar Chart Data');
+      const wsBar = XLSX.utils.json_to_sheet(
       departments.map((dept) => ({
-        Department: dept,
-        'Total A4': departmentQuantities[dept].totalA4,
-        'Total A3': departmentQuantities[dept].totalA3,
-        'Total A5': departmentQuantities[dept].totalA5,
+      Department: dept,
+      'Total A4': departmentQuantities[dept].totalA4,
+      'Total A3': departmentQuantities[dept].totalA3,
+      'Total A5': departmentQuantities[dept].totalA5,
       }))
-    );
-    wb.Sheets['Bar Chart Data'] = wsBar;
+      );
+      wb.Sheets['Bar Chart Data'] = wsBar;wb.SheetNames.push('Pie Chart Data');
+      const wsPie = XLSX.utils.json_to_sheet(
+        departments.map((dept, index) => ({
+          Department: dept,
+          'Total A4': departmentQuantities[dept].totalA4,
+          'Total A3': departmentQuantities[dept].totalA3,
+          'Total A5': departmentQuantities[dept].totalA5,
+          Color: colors[index % colors.length],
+        }))
+      );
+      wb.Sheets['Pie Chart Data'] = wsPie;
+      XLSX.writeFile(wb, 'charts_data.xlsx');
+    };
 
-    wb.SheetNames.push('Pie Chart Data');
-    const wsPie = XLSX.utils.json_to_sheet(
-      departments.map((dept, index) => ({
-        Department: dept,
-        'Total A4': departmentQuantities[dept].totalA4,
-        'Total A3': departmentQuantities[dept].totalA3,
-        'Total A5': departmentQuantities[dept].totalA5,
-        Color: colors[index % colors.length],
-      }))
-    );
-    wb.Sheets['Pie Chart Data'] = wsPie;
-    XLSX.writeFile(wb, 'charts_data.xlsx');
-  };
-
-  const exportToPNG = (chartType, index) => {
+    const exportToPNG = (chartType, index) => {
     let chartCanvas;
     if (chartType === 'bar') {
-      chartCanvas = barChartRefs.current[index]?.canvas;
+    chartCanvas = barChartRefs.current[index]?.canvas;
     } else if (chartType === 'pie') {
-      chartCanvas = pieChartRef.current?.canvas;
+    chartCanvas = pieChartRef.current?.canvas;
     } else if (chartType === 'user') {
-      chartCanvas = userChartRef.current?.canvas;
+    chartCanvas = userChartRef.current?.canvas;
     }
     if (chartCanvas) {
-      const pngUrl = chartCanvas.toDataURL('image/png');
-      const downloadLink = document.createElement('a');
-      downloadLink.href = pngUrl;
-      downloadLink.download = `${chartType}_chart.png`;
-      downloadLink.click();
+    const pngUrl = chartCanvas.toDataURL('image/png');
+    const downloadLink = document.createElement('a');
+    downloadLink.href = pngUrl;
+    downloadLink.download = '${chartType}_chart.png';
+    downloadLink.click();
     }
-  };
-
-  const exportToPDF = async () => {
+    };
+    
+    const exportToPDF = async () => {
     const pdf = new jsPDF('landscape');
-    const scaleFactor = window.devicePixelRatio || 1;
-  
-    for (let i = 0; i < barChartRefs.current.length; i++) {
+    const scaleFactor = window.devicePixelRatio || 1;for (let i = 0; i < barChartRefs.current.length; i++) {
       const chartCanvas = barChartRefs.current[i].canvas;
       if (chartCanvas) {
         const chartImage = await html2canvas(chartCanvas, {
@@ -213,22 +205,20 @@ function ExportableChart() {
           useCORS: true,
           logging: true, // Enable logging for debugging
           allowTaint: false, // Disable taint on the canvas
-          quality: 500,
+          quality: 5000,
         });
         const imgData = chartImage.toDataURL('image/png');
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-  
+    
         pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight - 20);
         if (i < barChartRefs.current.length - 1) {
           pdf.addPage();
         }
       }
     }
-  
-  
-  
+    
     const userChartCanvas = userChartRef.current?.canvas;
     if (userChartCanvas) {
       const userChartImage = await html2canvas(userChartCanvas, { scale: scaleFactor });
@@ -239,86 +229,34 @@ function ExportableChart() {
       pdf.addPage();
       pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight - 20);
     }
-  
+    
     pdf.save('charts.pdf');
   };
-  
+
   return (
-    <div style={{marginTop: "50px"}}>
-      <button onClick={exportToPDF}>Export to PDF</button>
-
-      <div className="chart-grid">
-        {departments.map((dept, index) => (
-          <div className="chart-container" key={dept}>
-            <h3>{`Department: ${dept}`}</h3>
-            <Bar
-              ref={(el) => (barChartRefs.current[index] = el)}
-              data={{
-                labels: dates,
-                datasets: [
-                  {
-                    label: `Quantité A4 - ${dept}`,
-                    data: dates.map((date) => totalQuantitiesPerMonth[dept][date]?.quantite_a4 || 0),
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                  },
-                  {
-                    label: `Quantité A3 - ${dept}`,
-                    data: dates.map((date) => totalQuantitiesPerMonth[dept][date]?.quantite_a3 || 0),
-                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                  },
-                  {
-                    label: `Quantité A5 - ${dept}`,
-                    data: dates.map((date) => totalQuantitiesPerMonth[dept][date]?.quantite_a5 || 0),
-                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
-                  },
-                ],
-              }}
-              options={{
-                scales: {
-                  x: {
-                    beginAtZero: true,
-                  },
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-                plugins: {
-                  zoom: zoomOptions,
-                },
-                plugins: {
-                  title: {
-                    display: true,
-                    text: `Quantities per Month for ${dept}`,
-                  },
-                },
-              }}
-            />
-          </div>
-        ))}
-      </div>
-
-     
-
-      <div className="chart-container">
-        <h3>Total Quantities by User</h3>
+  <div style={{marginTop: "70px"}}>
+  <button onClick={exportToPDF}>Export to PDF</button>  <div className="chart-grid">
+    {departments.map((dept, index) => (
+      <div className="chart-container" key={dept}>
+        <h3>{`Department: ${dept}`}</h3>
         <Bar
-          ref={userChartRef}
+          ref={(el) => (barChartRefs.current[index] = el)}
           data={{
-            labels: users,
+            labels: dates,
             datasets: [
               {
-                label: 'Quantité A4',
-                data: users.map((user) => totalQuantitiesPerUser[user].quantite_a4),
+                label: `Quantité A4 - ${dept}`,
+                data: dates.map((date) => totalQuantitiesPerMonth[dept][date]?.quantite_a4 || 0),
                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
               },
               {
-                label: 'Quantité A3',
-                data: users.map((user) => totalQuantitiesPerUser[user].quantite_a3),
+                label: `Quantité A3 - ${dept}`,
+                data: dates.map((date) => totalQuantitiesPerMonth[dept][date]?.quantite_a3 || 0),
                 backgroundColor: 'rgba(153, 102, 255, 0.6)',
               },
               {
-                label: 'Quantité A5',
-                data: users.map((user) => totalQuantitiesPerUser[user].quantite_a5),
+                label: `Quantité A5 - ${dept}`,
+                data: dates.map((date) => totalQuantitiesPerMonth[dept][date]?.quantite_a5 || 0),
                 backgroundColor: 'rgba(255, 159, 64, 0.6)',
               },
             ],
@@ -332,18 +270,61 @@ function ExportableChart() {
                 beginAtZero: true,
               },
             },
-            plugins: {
-              zoom: zoomOptions,
-              title: {
-                display: true,
-                text: 'Total Quantities by User',
-              },
+            plugins: [ZoomPlugin], // Updated usage of plugin
+            title: {
+              display: true,
+              text: `Quantities per Month for ${dept}`,
             },
           }}
         />
       </div>
-    </div>
-  );
+    ))}
+  </div>
+
+  <div className="chart-container">
+    <h3>Total Quantities by User</h3>
+    <Bar
+      ref={userChartRef}
+      data={{
+        labels: users,
+        datasets: [
+          {
+            label: 'Quantité A4',
+            data: users.map((user) => totalQuantitiesPerUser[user].quantite_a4),
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          },
+          {
+            label: 'Quantité A3',
+            data: users.map((user) => totalQuantitiesPerUser[user].quantite_a3),
+            backgroundColor: 'rgba(153, 102, 255, 0.6)',
+          },
+          {
+            label: 'Quantité A5',
+            data: users.map((user) => totalQuantitiesPerUser[user].quantite_a5),
+            backgroundColor: 'rgba(255, 159, 64, 0.6)',
+          },
+        ],
+      }}
+      options={{
+        scales: {
+          x: {
+            beginAtZero: true,
+          },
+          y: {
+            beginAtZero: true,
+          },
+        },
+        plugins: [ZoomPlugin], // Updated usage of plugin
+        title: {
+          display: true,
+          text: 'Total Quantities by User',
+        },
+      }}
+    />
+  </div>
+</div>
+);
 }
 
 export default ExportableChart;
+      

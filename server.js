@@ -38,6 +38,7 @@ app.post('/submit-form', (req, res) => {
     quantiteA5,
     dateReception,
     dateProchaine,
+    copycenter
   } = req.body;
  
   const query = 'INSERT INTO data SET ?';
@@ -53,6 +54,7 @@ app.post('/submit-form', (req, res) => {
     quantite_a5: quantiteA5 || null,
     date_reception: dateReception || null,
     date_prochaine: dateProchaine || null,
+    copycenter : copycenter || null
   };
  
   db.query(query, formData, (err, result) => {
@@ -67,12 +69,15 @@ app.post('/submit-form', (req, res) => {
  
 // Route to get all data with optional filters
 app.get('/get-data', (req, res) => {
-  const { bon_n, employe_demandeur, departement, kst, date_reception, date_prochaine,quantite_a4,quantite_a5,quantite_a3,matriculedemandeur } = req.query;
+  const { bon_n, employe_demandeur, departement, kst, date_reception, date_prochaine,quantite_a4,quantite_a5,quantite_a3,matriculedemandeur,copycenter } = req.query;
  
-  let query = 'SELECT id, employe_demandeur, matriculedemandeur, quantite_a4, quantite_a3, DATE_FORMAT(date_reception, "%Y-%m-%d") AS date_reception, DATE_FORMAT(date_prochaine, "%Y-%m-%d") AS date_prochaine, kst, bon_n, departement, quantite_a5 FROM data WHERE 1=1';
+  let query = 'SELECT id, employe_demandeur, matriculedemandeur, quantite_a4, quantite_a3, DATE_FORMAT(date_reception, "%Y-%m-%d") AS date_reception, DATE_FORMAT(date_prochaine, "%Y-%m-%d") AS date_prochaine, kst, bon_n, departement, quantite_a5,copycenter FROM data WHERE 1=1';
  
   if (bon_n) {
     query += ` AND bon_n LIKE '%${bon_n}%'`;
+  }
+  if (copycenter) {
+    query += ` AND copycenter LIKE '%${copycenter}%'`;
   }
   if (employe_demandeur) {
     query += ` AND employe_demandeur LIKE '%${employe_demandeur}%'`;
@@ -126,6 +131,7 @@ app.put('/update-data/:id', (req, res) => {
     quantite_a5,
     date_reception,
     date_prochaine,
+    copycenter
   } = req.body;
  
   const query = `
@@ -139,7 +145,8 @@ app.put('/update-data/:id', (req, res) => {
       quantite_a3 = ?,
       quantite_a5 = ?,
       date_reception = ?,
-      date_prochaine = ?
+      date_prochaine = ?,
+      copycenter = ?
     WHERE id = ?
   `;
  
@@ -154,6 +161,7 @@ app.put('/update-data/:id', (req, res) => {
     quantite_a5,
     date_reception,
     date_prochaine,
+    copycenter,
     id,
   ];
  
